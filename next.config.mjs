@@ -4,6 +4,11 @@ const nextConfig = {
         staleTimes:{
             dynamic:30
         }
+    },
+    images:{
+        remotePatterns:[{
+            hostname:"lh3.googleusercontent.com"
+        }]
     }
 };
 
