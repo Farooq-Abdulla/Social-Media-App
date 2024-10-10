@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import { Bell, Bookmark, Home } from "lucide-react"
 import Link from "next/link"
 import { memo } from "react"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
 
 function MenuBar({className}:{className?:  string}){
     return(

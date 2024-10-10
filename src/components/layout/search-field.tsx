@@ -4,7 +4,7 @@
 import { SearchIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FormEvent, memo, useCallback, useEffect, useRef, useState } from "react"
-import { Input } from "./ui/input"
+import { Input } from "../ui/input"
 
 function SearchField() {
 

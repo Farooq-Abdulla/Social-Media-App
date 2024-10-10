@@ -1,5 +1,5 @@
-import Menubar from "@/components/menubar";
-import NavBar from "@/components/navbar";
+import Menubar from "@/components/layout/menubar";
+import NavBar from "@/components/layout/navbar";
 
 export default function SecureAccessLayout({
     children,
