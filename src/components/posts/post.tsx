@@ -15,7 +15,7 @@ export default function Posts({post}:{post:PostData}){
                     {post.user.displayName}
                 </Link>
                 <Link className="block text-sm text-muted-foreground hover:underline" href={`/posts/${post.id}`}>
-                    {formatRelativeDate(post.createdAt)}
+                    {formatRelativeDate(new Date(post.createdAt))}
                 </Link>
             </div>
         </div>

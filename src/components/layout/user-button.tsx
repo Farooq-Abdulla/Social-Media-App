@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import {
     Dot,
     LogOut,
@@ -34,6 +35,7 @@ function UserButton({ className }: { className?: string }) {
     const session = useSession()
     const user = session.data?.user
     const { theme, setTheme } = useTheme()
+    const queryClient= useQueryClient();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -92,7 +94,10 @@ function UserButton({ className }: { className?: string }) {
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem className="w-48" onClick={() => signOut({ redirectTo: "/" })}>
+                <DropdownMenuItem className="w-48" onClick={() => {
+                    queryClient.clear();
+                    signOut({ redirectTo: "/" })
+                    }}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                 </DropdownMenuItem>

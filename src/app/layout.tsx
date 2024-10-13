@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@/lib/providers";
+import { ReactQueryProvider, ThemeProvider } from "@/lib/providers";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";
@@ -18,11 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
+    <html lang="en" >
+      <body >
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            <ReactQueryProvider>
+              {children}
+            </ReactQueryProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>
