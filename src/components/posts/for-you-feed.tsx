@@ -6,6 +6,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import InfiniteScrollContainer from "../ui/infinite-scroll-container";
 import Posts from "./post";
+import PostsLoadingSkeleton from "./posts-skeleton";
 
 export default function ForYouFeed() {
     const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery<PostsPage>({
@@ -20,7 +21,10 @@ export default function ForYouFeed() {
 
     const posts = data?.pages.flatMap(page => page.posts) || []
     if (status === "pending") {
-        return <Loader2 className="mx-auto animate-spin" />
+        return <PostsLoadingSkeleton/>;
+    }
+    if(status==="success" && !posts.length && !hasNextPage){
+        return <p className="text-center text-muted-foreground">No one has Posted anything yet</p>
     }
     if (status === "error") {
         return <p className="text-center text-destructive">An error occured while loading posts</p>

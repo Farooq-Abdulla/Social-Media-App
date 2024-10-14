@@ -2,6 +2,7 @@
 
 import getServerSession from "@/lib/get-server-session";
 import { prisma } from "@/lib/prisma";
+import { postDataInclude } from "@/lib/types";
 import { z } from "zod";
 
 const requiredString=z.string().trim().min(1, "required")
@@ -16,11 +17,13 @@ export async function submitPost(input :string) {
 
     const {content}= createPostSchema.parse({content:input})
 
-    await prisma.post.create({
+    const newPost=await prisma.post.create({
         data:{
             content,
             userId:user.id!
-        }
+        },
+        include:postDataInclude
     })
+    return newPost
 
 }
