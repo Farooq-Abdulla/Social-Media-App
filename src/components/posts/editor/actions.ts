@@ -2,7 +2,7 @@
 
 import getServerSession from "@/lib/get-server-session";
 import { prisma } from "@/lib/prisma";
-import { postDataInclude } from "@/lib/types";
+import { getPostDataInclude } from "@/lib/types";
 import { z } from "zod";
 
 const requiredString=z.string().trim().min(1, "required")
@@ -22,7 +22,7 @@ export async function submitPost(input :string) {
             content,
             userId:user.id!
         },
-        include:postDataInclude
+        include:getPostDataInclude(user.id!)
     })
     return newPost
 
