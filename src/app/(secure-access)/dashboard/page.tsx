@@ -5,7 +5,7 @@ import ForYouFeed from "@/components/posts/for-you-feed";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Metadata } from "next";
 
-export const metaData: Metadata = {
+export const metadata: Metadata = {
     title: "Dashboard"
 }
 export default  function Dashboard() {

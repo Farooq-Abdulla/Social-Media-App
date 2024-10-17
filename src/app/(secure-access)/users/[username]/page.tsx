@@ -34,7 +34,7 @@ const getUser= cache(async(username:string, loggedInUserId:string)=>{
 
 })
 
-export async function generateMetaData({params}:PageProps):Promise<Metadata> {
+export async function generateMetadata({params}:PageProps):Promise<Metadata> {
     const session= await getServerSession()
     const loggedInUser= session?.user
     if(!loggedInUser) return {}
