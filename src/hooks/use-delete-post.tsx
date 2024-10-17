@@ -32,7 +32,7 @@ export function useDeletePost() {
                 description: "Post deleted."
             })
             if (pathname === `/posts/${deletedPost.id}`) {
-                router.push(`/users/${deletedPost.user.name}`);
+                router.push(`/users/${deletedPost.user.displayName}`);
             }
         },
         onError(error) {
