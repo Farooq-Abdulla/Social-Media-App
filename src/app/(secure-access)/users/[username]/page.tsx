@@ -1,6 +1,5 @@
 import TrendsSideBar from "@/components/layout/trends-sidebar"
 import UserAvatar from "@/components/layout/user-avatar"
-import { Button } from "@/components/ui/button"
 import FollowButton from "@/components/ui/follow-button"
 import FollowerCount from "@/components/ui/follower-count"
 import Linkify from "@/components/ui/linkify"
@@ -12,6 +11,7 @@ import { formatDate } from "date-fns"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { cache } from "react"
+import EditProfileButton from "./edit-profile-button"
 import UserPostsFeed from "./user-posts-feed"
 
 interface PageProps {
@@ -99,7 +99,7 @@ async function UserProfile({ user, loggedInUserId }: UserDataProps) {
                         <FollowerCount userId={user.id} initialState={followerInfo} />
                     </div>
                 </div>
-                {user.id === loggedInUserId ? (<Button>Edit</Button>) : (<FollowButton userId={user.id} initialState={followerInfo} />)}
+                {user.id === loggedInUserId ? (<EditProfileButton user={user}/>) : (<FollowButton userId={user.id} initialState={followerInfo} />)}
             </div>
             {user.bio && (
                 <>
