@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { memo } from "react";
 import UserAvatar from "./user-avatar";
 
@@ -36,6 +37,7 @@ function UserButton({ className }: { className?: string }) {
     const user = session.data?.user
     const { theme, setTheme } = useTheme()
     const queryClient= useQueryClient();
+    const router= useRouter();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -51,7 +53,7 @@ function UserButton({ className }: { className?: string }) {
 
                 <DropdownMenuGroup>
 
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={()=>router.push(`/users/${user?.displayName}`)}>
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                         <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>

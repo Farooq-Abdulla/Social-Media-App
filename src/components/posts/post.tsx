@@ -1,7 +1,9 @@
 'use client';
 import { PostData } from "@/lib/types";
-import { formatRelativeDate } from "@/lib/utils";
+import { cn, formatRelativeDate } from "@/lib/utils";
+import { Media } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import UserAvatar from "../layout/user-avatar";
 import Linkify from "../ui/linkify";
@@ -39,5 +41,39 @@ export default function Posts({ post }: { post: PostData }) {
         <Linkify>
             <div className="whitespace-pre-line break-words">{post.content}</div>
         </Linkify>
+        {!!post.attachments.length && (
+            <MediaPreviews attachements={post.attachments} />
+        )}
     </div>
+}
+
+interface MediaPreviewsPops {
+    attachements: Media[]
+}
+
+function MediaPreviews({ attachements }: MediaPreviewsPops) {
+
+    return <div className={cn("flex flex-col gap-3", attachements.length > 1 && "sm:grid sm:grid-cols-2")}>
+        {attachements.map(m => (
+            <MediaPreview key={m.id} media={m} />
+        ))}
+    </div>
+}
+
+interface MediaPreviewProps {
+    media: Media
+}
+
+function MediaPreview({ media }: MediaPreviewProps) {
+    if (media.type === "IMAGE") {
+        return <Image src={media.url} alt="Attachment" width={500} height={500} className="mx-auto size-fit max-h-[30rem] rounded-2xl" />
+    }
+    if (media.type === "VIDEO") {
+        return (
+            <div>
+                <video controls src={media.url} className="mx-auto size-fit max-h-[30rem] rounded-2xl" />
+            </div>
+        )
+    }
+    return <p className="text-destructive">Unsupported meida type</p>
 }

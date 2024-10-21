@@ -3,24 +3,24 @@
 import getServerSession from "@/lib/get-server-session";
 import { prisma } from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
-import { z } from "zod";
+import { createPostSchema } from "@/lib/validations";
 
-const requiredString=z.string().trim().min(1, "required")
-const createPostSchema= z.object({
-    content:requiredString
-})
 
-export async function submitPost(input :string) {
+
+export async function submitPost(input :{content: string, mediaIds: string[]}) {
     const session=await getServerSession()
     const user=session?.user
     if(!user) throw Error("Unauthorized")
 
-    const {content}= createPostSchema.parse({content:input})
+    const {content, mediaIds}= createPostSchema.parse(input)  
 
     const newPost=await prisma.post.create({
         data:{
             content,
-            userId:user.id!
+            userId:user.id!,
+            attachments:{
+                connect: mediaIds.map((id) => ({ id })),
+            }
         },
         include:getPostDataInclude(user.id!)
     })
