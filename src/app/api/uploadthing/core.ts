@@ -15,7 +15,7 @@ export const fileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       const oldAvatarUrl = metadata.user.image;
-      if (oldAvatarUrl) {
+      if (oldAvatarUrl && !oldAvatarUrl?.includes('lh3.googleusercontent.com')) {
         const key = oldAvatarUrl.split(
           `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`
         )[1];
