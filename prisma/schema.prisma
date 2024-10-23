@@ -31,6 +31,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  likes     Like[]
 
   @@map("users")
 }
@@ -51,6 +52,7 @@ model Post {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments Media[]
   createdAt   DateTime @default(now())
+  likes       Like[]
 
   @@map("posts")
 }
@@ -112,4 +114,14 @@ model Media {
 enum MediaType {
   IMAGE
   VIDEO
+}
+
+model Like {
+  userId String
+  postID String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postID], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postID])
+  @@map("likes")
 }

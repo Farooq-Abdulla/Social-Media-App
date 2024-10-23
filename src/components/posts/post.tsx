@@ -8,6 +8,7 @@ import Link from "next/link";
 import UserAvatar from "../layout/user-avatar";
 import Linkify from "../ui/linkify";
 import UserTooltip from "../ui/user-tooltip";
+import LikeButton from "./like-button";
 import PostDotsButton from "./post-dots-button";
 
 
@@ -44,6 +45,12 @@ export default function Posts({ post }: { post: PostData }) {
         {!!post.attachments.length && (
             <MediaPreviews attachements={post.attachments} />
         )}
+        <hr className="text-muted-foreground" />
+        <LikeButton postId={post.id} initialState={{
+            likes: post._count.likes,
+            isLikedByUser: post.likes.some((like) => like.userId === user?.id)
+        }}
+        />
     </div>
 }
 
