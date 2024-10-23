@@ -29,7 +29,7 @@ export default function Posts({ post }: { post: PostData }) {
                             {post.user.displayName}
                         </Link>
                     </UserTooltip>
-                    <Link className="block text-sm text-muted-foreground hover:underline" href={`/posts/${post.id}`}>
+                    <Link className="block text-sm text-muted-foreground hover:underline" href={`/posts/${post.id}`} suppressHydrationWarning>
                         {formatRelativeDate(new Date(post.createdAt))}
                     </Link>
                 </div>

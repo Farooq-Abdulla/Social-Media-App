@@ -8,16 +8,21 @@ import { cn } from "@/lib/utils";
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from '@tiptap/starter-kit';
+import { useDropzone } from "@uploadthing/react";
 import { ImageIcon, Loader2, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { memo, useRef } from "react";
+import { ClipboardEvent, memo, useRef } from "react";
 import "./styles.css";
 function PostEditor() {
     const session = useSession()
     const user = session.data?.user
     const mutation = useSubmitPost()
     const { startUpload, attachments, isUploading, uploadProgress, removeAttachement, reset: resetMediaUploads } = useMediaUpload();
+    const { getRootProps, getInputProps, isDragAccept } = useDropzone({
+        onDrop: startUpload
+    })
+    const { onClick, ...rootProps } = getRootProps();
 
     const editor = useEditor({
         extensions: [
@@ -38,11 +43,19 @@ function PostEditor() {
         })
     }
 
+    function onPaste(e: ClipboardEvent<HTMLInputElement>) {
+        const files = Array.from(e.clipboardData.items).filter(item => item.kind === "file").map(item => item.getAsFile()) as File[];
+        startUpload(files)
+    }
+
     return (
         <div className="flex flex-col gap-5 rounded-2xl bg-card p-5 shadow-lg ">
             <div className="flex gap-5">
                 <UserAvatar avatarUrl={user?.image!} className="hidden sm:inline" />
-                <EditorContent editor={editor} className="w-full max-h-[20rem] overflow-y-auto rounded-2xl px-5 py-3 bg-background" />
+                <div {...rootProps} className="w-full">
+                    <EditorContent onPaste={onPaste} editor={editor} className={cn("w-full max-h-[20rem] overflow-y-auto rounded-2xl px-5 py-3 bg-background", isDragAccept && "outline-dashed")} />
+                    <input {...getInputProps()} />
+                </div>
             </div>
             {!!attachments.length && (
                 <AttachmentPreviews attachments={attachments} removeAttachment={removeAttachement} />
