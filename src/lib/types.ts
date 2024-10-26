@@ -98,3 +98,31 @@ export interface LikeInfo {
 export interface BookmarkInfo{
   isBookmarkedByUser: boolean
 }
+
+export const notificationsInclude={
+  issuer:{
+    select :{
+      name: true,
+      displayName: true,
+      image: true
+    }
+  },
+  post: {
+    select : {
+      content: true
+    }
+  }
+} satisfies Prisma.NotificationInclude
+
+export type NotificationData= Prisma.NotificationGetPayload<{
+  include: typeof notificationsInclude
+}>
+
+export interface NotificationPage{
+  notifications: NotificationData[],
+  nextCursor : string|null
+}
+
+export interface NotificationCountInfo {
+  unreadCount : number
+}

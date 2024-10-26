@@ -64,19 +64,44 @@ export async function POST(
     if (!loggedInUser)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    await prisma.like.upsert({
-      where: {
-        userId_postID: {
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: {
+        userId: true,
+      },
+    });
+
+    if (!post)
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+
+    await prisma.$transaction([
+      prisma.like.upsert({
+        where: {
+          userId_postID: {
+            userId: loggedInUser.id!,
+            postID: postId,
+          },
+        },
+        create: {
           userId: loggedInUser.id!,
           postID: postId,
         },
-      },
-      create: {
-        userId: loggedInUser.id!,
-        postID: postId,
-      },
-      update: {},
-    });
+        update: {},
+      }),
+      ...(loggedInUser.id !== post.userId
+        ? [
+            prisma.notification.create({
+              data: {
+                issuerId: loggedInUser.id!,
+                recipientId: post.userId,
+                postId,
+                type: 'LIKE',
+              },
+            }),
+          ]
+        : []),
+    ]);
+
     return new NextResponse();
   } catch (error) {
     console.error(error);
@@ -97,12 +122,31 @@ export async function DELETE(
     if (!loggedInUser)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    await prisma.like.deleteMany({
-      where: {
-        userId: loggedInUser.id!,
-        postID: postId,
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: {
+        userId: true,
       },
     });
+
+    if (!post)
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    await prisma.$transaction([
+      prisma.like.deleteMany({
+        where: {
+          userId: loggedInUser.id!,
+          postID: postId,
+        },
+      }),
+      prisma.notification.deleteMany({
+        where: {
+          issuerId: loggedInUser.id!,
+          recipientId: post.userId,
+          postId,
+          type: 'LIKE',
+        },
+      }),
+    ]);
     return new NextResponse();
   } catch (error) {
     console.error(error);
