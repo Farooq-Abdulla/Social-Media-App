@@ -8,7 +8,6 @@ import {
     DropdownMenuLabel,
     DropdownMenuPortal,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuSub,
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
@@ -21,7 +20,6 @@ import {
     LogOut,
     Monitor,
     Moon,
-    Settings,
     Sun,
     User
 } from "lucide-react";
@@ -36,8 +34,8 @@ function UserButton({ className }: { className?: string }) {
     const session = useSession()
     const user = session.data?.user
     const { theme, setTheme } = useTheme()
-    const queryClient= useQueryClient();
-    const router= useRouter();
+    const queryClient = useQueryClient();
+    const router = useRouter();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -47,23 +45,23 @@ function UserButton({ className }: { className?: string }) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="w-48">
-                <DropdownMenuLabel>logged in as @{user?.name}</DropdownMenuLabel>
+                <DropdownMenuLabel>logged in as @{user?.displayName}</DropdownMenuLabel>
 
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
 
-                    <DropdownMenuItem onClick={()=>router.push(`/users/${user?.displayName}`)}>
+                    <DropdownMenuItem onClick={() => router.push(`/users/${user?.displayName}`)}>
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
-                        <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
                         <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
 
 
                     <DropdownMenuSub>
@@ -74,7 +72,7 @@ function UserButton({ className }: { className?: string }) {
                         <DropdownMenuPortal>
                             <DropdownMenuSubContent>
                                 <DropdownMenuItem onClick={() => setTheme("light")}>
-                                    {theme === 'light' && <Dot/>}
+                                    {theme === 'light' && <Dot />}
                                     <Sun className="mr-2 h-4 w-4" />
                                     <span>Light</span>
                                 </DropdownMenuItem>
@@ -99,7 +97,7 @@ function UserButton({ className }: { className?: string }) {
                 <DropdownMenuItem className="w-48" onClick={() => {
                     queryClient.clear();
                     signOut({ redirectTo: "/" })
-                    }}>
+                }}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                 </DropdownMenuItem>

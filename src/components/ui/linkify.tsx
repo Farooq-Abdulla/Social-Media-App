@@ -19,7 +19,7 @@ function LinkifyUrl({ children }: { children: React.ReactNode }) {
 
 function LinkifyUsername({ children }: { children: React.ReactNode }) {
     return <LinkIt regex={/(@[a-zA-Z0-9_-]+)/} component={(match, key) => {
-        if(match.slice(1).toLowerCase()==="spotlight") return <Link key={key} href={`/dashboard`} className=" text-blue-400 hover:underline">{match}</Link>
+        if (match.slice(1).toLowerCase() === "spotlight") return <Link key={key} href={`/dashboard`} className=" text-blue-400 hover:underline">{match}</Link>
         return <Link key={key} href={`/users/${match.slice(1)}`} className=" text-blue-400 hover:underline">{match}</Link>
     }}>{children}</LinkIt>
 }
@@ -27,7 +27,7 @@ function LinkifyUsername({ children }: { children: React.ReactNode }) {
 function LinkifyHashtag({ children }: { children: React.ReactNode }) {
     return <LinkIt regex={/(#[a-zA-Z0-9]+)/}
         component={(match, key) => {
-            return <Link key={key} href={`hashtag/${match.slice(1)}`} className="text-blue-400 hover:underline">{match}</Link>
+            return <Link key={key} href={`/hashtag/${match.slice(1)}`} className="text-blue-400 hover:underline">{match}</Link>
         }}
     >{children}</LinkIt>
 }
