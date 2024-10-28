@@ -20,6 +20,7 @@ export function getUserDataSelect(loggedInUserId: string) {
       select: {
         posts: true,
         followers: true,
+        following: true,
       },
     },
   } satisfies Prisma.UserSelect;
@@ -43,7 +44,7 @@ export function getPostDataInclude(loggedInUserId: string) {
         userId: true,
       },
     },
-    bookmarks:{
+    bookmarks: {
       where: {
         userId: loggedInUserId,
       },
@@ -54,7 +55,7 @@ export function getPostDataInclude(loggedInUserId: string) {
     _count: {
       select: {
         likes: true,
-        comments: true
+        comments: true,
       },
     },
   } satisfies Prisma.PostInclude;
@@ -69,25 +70,29 @@ export interface PostsPage {
   nextCursor: string | null;
 }
 
-export function getCommentDataInclude(loggedInUserId:string){
-  return{
-    user:{
-      select: getUserDataSelect(loggedInUserId)
-    }
-  } satisfies Prisma.CommentInclude
+export function getCommentDataInclude(loggedInUserId: string) {
+  return {
+    user: {
+      select: getUserDataSelect(loggedInUserId),
+    },
+  } satisfies Prisma.CommentInclude;
 }
 
-export type CommentData= Prisma.CommentGetPayload<{
-  include: ReturnType<typeof getCommentDataInclude>
-}>
+export type CommentData = Prisma.CommentGetPayload<{
+  include: ReturnType<typeof getCommentDataInclude>;
+}>;
 
-export interface CommentsPage{
-  comments:CommentData[];
-  previousCursor: string|null
+export interface CommentsPage {
+  comments: CommentData[];
+  previousCursor: string | null;
 }
 export interface FollowerInfo {
   followers: number;
   isFollowedByUser: boolean;
+}
+
+export interface FollowingInfo {
+  following: number;
 }
 
 export interface LikeInfo {
@@ -95,34 +100,34 @@ export interface LikeInfo {
   isLikedByUser: boolean;
 }
 
-export interface BookmarkInfo{
-  isBookmarkedByUser: boolean
+export interface BookmarkInfo {
+  isBookmarkedByUser: boolean;
 }
 
-export const notificationsInclude={
-  issuer:{
-    select :{
+export const notificationsInclude = {
+  issuer: {
+    select: {
       name: true,
       displayName: true,
-      image: true
-    }
+      image: true,
+    },
   },
   post: {
-    select : {
-      content: true
-    }
-  }
-} satisfies Prisma.NotificationInclude
+    select: {
+      content: true,
+    },
+  },
+} satisfies Prisma.NotificationInclude;
 
-export type NotificationData= Prisma.NotificationGetPayload<{
-  include: typeof notificationsInclude
-}>
+export type NotificationData = Prisma.NotificationGetPayload<{
+  include: typeof notificationsInclude;
+}>;
 
-export interface NotificationPage{
-  notifications: NotificationData[],
-  nextCursor : string|null
+export interface NotificationPage {
+  notifications: NotificationData[];
+  nextCursor: string | null;
 }
 
 export interface NotificationCountInfo {
-  unreadCount : number
+  unreadCount: number;
 }

@@ -2,10 +2,11 @@ import TrendsSideBar from "@/components/layout/trends-sidebar"
 import UserAvatar from "@/components/layout/user-avatar"
 import FollowButton from "@/components/ui/follow-button"
 import FollowerCount from "@/components/ui/follower-count"
+import FollowingCount from "@/components/ui/following-count"
 import Linkify from "@/components/ui/linkify"
 import getServerSession from "@/lib/get-server-session"
 import { prisma } from "@/lib/prisma"
-import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types"
+import { FollowerInfo, FollowingInfo, getUserDataSelect, UserData } from "@/lib/types"
 import { formatNumber } from "@/lib/utils"
 import { formatDate } from "date-fns"
 import { Metadata } from "next"
@@ -78,6 +79,9 @@ async function UserProfile({ user, loggedInUserId }: UserDataProps) {
         followers: user._count.followers,
         isFollowedByUser: user.followers.some(({ followerId }) => followerId === loggedInUserId)
     }
+    const followingInfo: FollowingInfo = {
+        following: user._count.following
+    }
 
     return (
         <div className="h-fit w-full space-y-5 rounded-2xl bg-card p-5 shadow-lg">
@@ -97,9 +101,10 @@ async function UserProfile({ user, loggedInUserId }: UserDataProps) {
                             </span>
                         </span>
                         <FollowerCount userId={user.id} initialState={followerInfo} />
+                        <FollowingCount userId={user.id} initialState={followingInfo} />
                     </div>
                 </div>
-                {user.id === loggedInUserId ? (<EditProfileButton user={user}/>) : (<FollowButton userId={user.id} initialState={followerInfo} />)}
+                {user.id === loggedInUserId ? (<EditProfileButton user={user} />) : (<FollowButton userId={user.id} initialState={followerInfo} />)}
             </div>
             {user.bio && (
                 <>
