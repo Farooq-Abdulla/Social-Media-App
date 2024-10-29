@@ -5,32 +5,32 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-interface CommentInputProps{
+interface CommentInputProps {
     post: PostData
 }
 
-export default function CommentInput({post}:CommentInputProps){
-    const [input, setInput]= useState("")
-    const mutation= useSubmitComment(post.id)
-    function onSubmit(e:React.FormEvent) {
+export default function CommentInput({ post }: CommentInputProps) {
+    const [input, setInput] = useState("")
+    const mutation = useSubmitComment(post.id)
+    function onSubmit(e: React.FormEvent) {
         e.preventDefault()
-        if(!input) return;
+        if (!input) return;
         mutation.mutate(
             {
-                post, 
-                content:input
+                post,
+                content: input
             },
             {
-                onSuccess: ()=> setInput("")
+                onSuccess: () => setInput("")
             }
         )
     }
 
-    return(
-        <form className="flex w-full items-center gap-2" onSubmit={onSubmit}>
-            <Input placeholder="Write a comment..." value={input} onChange={(e)=> setInput(e.target.value)} autoFocus/>
-            <Button type="submit" variant={'ghost'} size={'icon'} disabled={!input.trim()|| mutation.isPending}>
-                {!mutation.isPending ? <SendHorizonal/>: <Loader2 className="animate-spin"/>}
+    return (
+        <form className="flex w-full items-center mt-8 gap-2" onSubmit={onSubmit}>
+            <Input placeholder="Write a comment..." value={input} onChange={(e) => setInput(e.target.value)} autoFocus />
+            <Button type="submit" variant={'ghost'} size={'icon'} disabled={!input.trim() || mutation.isPending}>
+                {!mutation.isPending ? <SendHorizonal /> : <Loader2 className="animate-spin" />}
             </Button>
         </form>
     )

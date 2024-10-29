@@ -1,11 +1,12 @@
 'use client';
-import { FollowerInfo, UserData } from "@/lib/types";
+import { FollowerInfo, FollowingInfo, UserData } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { PropsWithChildren } from "react";
 import UserAvatar from "../layout/user-avatar";
 import FollowButton from "./follow-button";
 import FollowerCount from "./follower-count";
+import FollowingCount from "./following-count";
 import Linkify from "./linkify";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
@@ -20,6 +21,9 @@ export default function UserTooltip({ children, user }: UserToolTipPops) {
     const followerState: FollowerInfo = {
         followers: user._count.followers,
         isFollowedByUser: !!user.followers.some(({ followerId }) => followerId === loggedInUser?.id)
+    }
+    const followingInfo: FollowingInfo = {
+        following: user._count.following
     }
 
     return (
@@ -47,7 +51,10 @@ export default function UserTooltip({ children, user }: UserToolTipPops) {
                                 <div className=" line-clamp-4 whitespace-pre-line break-words">{user.bio}</div>
                             </Linkify>
                         )}
-                        <FollowerCount userId={user.id} initialState={followerState}/>
+                        <div className="flex gap-2">
+                            <FollowerCount userId={user.id} initialState={followerState} />
+                            <FollowingCount userId={user.id} initialState={followingInfo} />
+                        </div>
                     </div>
                 </TooltipContent>
             </Tooltip>

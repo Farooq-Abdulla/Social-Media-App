@@ -70,6 +70,15 @@ export interface PostsPage {
   nextCursor: string | null;
 }
 
+export interface SearchData extends PostsPage {
+  users: UserData[];
+}
+
+export interface WhomToFollowData {
+  users: UserData[];
+  nextCursor: string | null;
+}
+
 export function getCommentDataInclude(loggedInUserId: string) {
   return {
     user: {
