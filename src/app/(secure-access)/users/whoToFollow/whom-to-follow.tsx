@@ -32,7 +32,7 @@ export default function WhomToFollow({ loggedInUserId }: { loggedInUserId: strin
     }
 
     return <InfiniteScrollContainer className="space-y-5" onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}>
-        {users.map((user) => <ListOfUsers user={user} loggedInUserId={loggedInUserId} />)}
+        {users.map((user) => <ListOfUsers key={user.id} user={user} loggedInUserId={loggedInUserId} />)}
         {isFetchingNextPage && <Loader2 className="mx-auto my-3 animate-spin" />}
     </InfiniteScrollContainer>
 }
