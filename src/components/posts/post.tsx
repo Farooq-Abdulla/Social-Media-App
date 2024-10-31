@@ -1,4 +1,5 @@
 'use client';
+import { config } from "@/lib/config";
 import { PostData } from "@/lib/types";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { Media } from "@prisma/client";
@@ -12,11 +13,13 @@ import UserAvatar from "../layout/user-avatar";
 import Linkify from "../ui/linkify";
 import UserTooltip from "../ui/user-tooltip";
 import BookmarkButton from "./bookmark-button";
+import { ShareButton } from "./editor/share-button";
 import LikeButton from "./like-button";
 import PostDotsButton from "./post-dots-button";
 
 
 export default function Posts({ post }: { post: PostData }) {
+
     const [showComments, setShowComments] = useState(false);
     const session = useSession();
     const user = session.data?.user
@@ -59,6 +62,7 @@ export default function Posts({ post }: { post: PostData }) {
                 }}
                 />
                 <CommentsButton post={post} onClick={() => setShowComments(!showComments)} />
+                <ShareButton linkToCopy={`${config.url}/posts/${post.id}`} />
             </div>
             <BookmarkButton postId={post.id} initialState={{
                 isBookmarkedByUser: post.bookmarks.some(bookmark => bookmark.userId === user?.id)

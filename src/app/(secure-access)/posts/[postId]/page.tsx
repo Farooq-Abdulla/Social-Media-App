@@ -9,7 +9,7 @@ import { getPostDataInclude, UserData } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache, Suspense } from "react";
 
 interface PageProps {
@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
     const session = await getServerSession();
     const loggedInUser = session?.user
+    if (!loggedInUser) redirect(`/api/auth/signin?callbackUrl=/posts/${params.postId}`)
     if (!loggedInUser) return <p className="text-destructive"> You are not authorized to view this page.</p>
 
     const post = await getPost(params.postId, loggedInUser.id!)

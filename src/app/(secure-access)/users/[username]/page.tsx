@@ -10,7 +10,7 @@ import { FollowerInfo, FollowingInfo, getUserDataSelect, UserData } from "@/lib/
 import { formatNumber } from "@/lib/utils"
 import { formatDate } from "date-fns"
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { cache } from "react"
 import EditProfileButton from "./edit-profile-button"
 import UserPostsFeed from "./user-posts-feed"
@@ -49,6 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
     const session = await getServerSession()
     const loggedInUser = session?.user
+    if (!loggedInUser) redirect(`/api/auth/signin?callbackUrl=/users/${params.username}`)
     if (!loggedInUser) return <p className="text-destructive"> You are not authorized to view this page.</p>
     const user = await getUser(params.username, loggedInUser.id!)
 

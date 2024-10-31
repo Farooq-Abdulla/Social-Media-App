@@ -1,10 +1,16 @@
 import { signIn } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight";
+import getServerSession from "@/lib/get-server-session";
 import { IconBrandGoogle } from "@tabler/icons-react";
+import { redirect } from "next/navigation";
 
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await getServerSession()
+  if (session?.user) {
+    redirect('/dashboard')
+  }
   return (
     <div className="h-screen w-full rounded-md flex md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
       <Spotlight

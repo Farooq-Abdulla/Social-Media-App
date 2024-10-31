@@ -1,5 +1,7 @@
 import TrendsSideBar, { TrendingTopics } from "@/components/layout/trends-sidebar"
+import getServerSession from "@/lib/get-server-session"
 import { Metadata } from "next"
+import { redirect } from "next/navigation"
 import SearchResults from "./search-results"
 
 interface PageProps {
@@ -8,11 +10,14 @@ interface PageProps {
 
 export function generateMetadata({ searchParams: { q } }: PageProps): Metadata {
     return {
-        title: `Search results for "${q}"`
+        title: `Search results for "${q === undefined ? "Trending Topics" : q}"`
     }
 }
 
-export default function SearchPage({ searchParams: { q } }: PageProps) {
+export default async function SearchPage({ searchParams: { q } }: PageProps) {
+    const session = await getServerSession()
+    const user = session?.user
+    if (!user) { q === undefined ? redirect(`/api/auth/signin?callbackUrl=/search`) : redirect(`/api/auth/signin?callbackUrl=/search?q=${q}`) }
     return (
         <main className="flex w-full min-w-0 gap-5">
             <div className="w-full min-w-0 space-y-5">

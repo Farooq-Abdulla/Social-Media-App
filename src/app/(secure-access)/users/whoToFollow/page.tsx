@@ -1,6 +1,7 @@
 import TrendsSideBar from "@/components/layout/trends-sidebar";
 import getServerSession from "@/lib/get-server-session";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import WhomToFollow from "./whom-to-follow";
 
 
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default async function Page() {
     const session = await getServerSession();
     const loggedInUserId = session?.user.id
+    if (!loggedInUserId) redirect(`/api/auth/signin?callbackUrl=/users/whoToFollow`)
     return (
         <main className="flex w-full min-w-0 gap-5">
             <div className="w-full min-w-0 space-y-5">

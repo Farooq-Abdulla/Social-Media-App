@@ -1,28 +1,32 @@
 import { prisma } from '@/lib/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import NextAuth from 'next-auth';
-import { Adapter } from "next-auth/adapters";
+import { Adapter } from 'next-auth/adapters';
 import Google from 'next-auth/providers/google';
 
-function getRandomInt(min:number, max:number):number {
+function getRandomInt(min: number, max: number): number {
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
-  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); 
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
 
-const customAdapter=PrismaAdapter(prisma)
-customAdapter.createUser= async(user)=>{
-  const displayName= user.name?.split(' ')[0]||'' + getRandomInt(100, 99999)
+const customAdapter = PrismaAdapter(prisma);
+customAdapter.createUser = async (user) => {
+  const displayName = user.name?.split(' ')[0] || '' + getRandomInt(100, 99999);
   return prisma.user.create({
-    data:{
+    data: {
       ...user,
-      displayName
-    }
-  })
-}
+      displayName,
+    },
+  });
+};
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  trustHost:true,
+  trustHost: true,
+  theme: {
+    logo: '/logo.png',
+    colorScheme: 'light',
+  },
   adapter: customAdapter as Adapter,
   callbacks: {
     session({ session, user }) {
