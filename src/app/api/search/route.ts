@@ -19,6 +19,12 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    if (q.length === 0) {
+      return NextResponse.json(
+        { message: 'You dont have query q' },
+        { status: 422 }
+      );
+    }
     const [posts, users] = await prisma.$transaction([
       prisma.post.findMany({
         where: {

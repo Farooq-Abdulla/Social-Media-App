@@ -17,7 +17,7 @@ interface SearchResultsProps {
 export default function SearchResults({ query }: SearchResultsProps) {
     const session = useSession()
     const userId = session.data?.user.id
-    const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery<SearchData>({
+    const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, error } = useInfiniteQuery<SearchData>({
         queryKey: ["post-feed", "search", query],
         queryFn: async ({ pageParam }) => {
             const params = {
@@ -34,7 +34,7 @@ export default function SearchResults({ query }: SearchResultsProps) {
     });
 
     const posts = data?.pages.flatMap(page => page.posts) || []
-    const users = data?.pages.flatMap(page => page.users);
+    const users = data?.pages.flatMap(page => page.users) || []
     if (status === "pending") {
         return <PostsLoadingSkeleton />;
     }
@@ -42,7 +42,8 @@ export default function SearchResults({ query }: SearchResultsProps) {
         return <p className="text-center text-muted-foreground">Nothing found for this query</p>
     }
     if (status === "error") {
-        return <p className="text-center text-destructive">An error occured while loading.</p>
+        if (!data) return <p className="text-center text-red-600">Search query is Empty. Try searching something else </p>
+        else return <p className="text-center text-red-600">An error occured while loading.</p>
     }
 
     return <InfiniteScrollContainer className="space-y-5" onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}>

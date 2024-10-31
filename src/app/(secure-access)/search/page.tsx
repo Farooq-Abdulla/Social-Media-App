@@ -17,9 +17,9 @@ export default function SearchPage({ searchParams: { q } }: PageProps) {
         <main className="flex w-full min-w-0 gap-5">
             <div className="w-full min-w-0 space-y-5">
                 <div className="rounded-2xl bg-card p-5 shadow-lg">
-                    <h1 className="text-center text-2xl font-bold line-clamp-2 break-all">Search results for &quot;{q}&quot;</h1>
+                    {q === '' || q === undefined ? <h1 className="text-center text-2xl font-bold line-clamp-2 break-all">You don&apos;t have query</h1> : <h1 className="text-center text-2xl font-bold line-clamp-2 break-all">Search results for &quot;{q}&quot;</h1>}
                 </div>
-                <SearchResults query={q} />
+                {(q !== '' && q !== undefined) && <SearchResults query={q} />}
             </div>
             <TrendsSideBar />
         </main>
