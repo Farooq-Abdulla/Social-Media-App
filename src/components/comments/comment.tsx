@@ -3,6 +3,7 @@ import { formatRelativeDate } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import UserAvatar from "../layout/user-avatar";
+import Linkify from "../ui/linkify";
 import UserTooltip from "../ui/user-tooltip";
 import CommentMoreButton from "./comments-more-button";
 
@@ -11,8 +12,8 @@ interface CommentProps {
 }
 
 export default function Comment({ comment }: CommentProps) {
-    const session= useSession()
-    const user= session.data?.user
+    const session = useSession()
+    const user = session.data?.user
     return (
         <div className="flex gap-3 py-3 group/comment">
             <span className="hidden sm:inline">
@@ -33,10 +34,12 @@ export default function Comment({ comment }: CommentProps) {
                         {formatRelativeDate(new Date(comment.createdAt))}
                     </span>
                 </div>
-                <div>{comment.content}</div>
+                <Linkify>
+                    <div>{comment.content}</div>
+                </Linkify>
             </div>
-            {comment.user.id===user?.id && (
-                <CommentMoreButton comment={comment} className="ms-auto opacity-0 transition-opacity group-hover/comment:opacity-100"/>
+            {comment.user.id === user?.id && (
+                <CommentMoreButton comment={comment} className="ms-auto opacity-0 transition-opacity group-hover/comment:opacity-100" />
             )}
         </div>
     )
