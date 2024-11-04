@@ -1,12 +1,28 @@
 import getServerSession from '@/lib/get-server-session';
 import { prisma } from '@/lib/prisma';
 import { LikeInfo } from '@/lib/types';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import { NextRequest, NextResponse } from 'next/server';
 interface IPostIdProps {
   params: {
     postId: string;
   };
 }
+const likeratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(40, '60s'),
+  ephemeralCache: new Map(),
+  prefix: '@upstash/ratelimit/like',
+  analytics: true,
+});
+const unlikeratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(40, '60s'),
+  ephemeralCache: new Map(),
+  prefix: '@upstash/ratelimit/un-like',
+  analytics: true,
+});
 
 export async function GET(
   req: NextRequest,
@@ -63,6 +79,20 @@ export async function POST(
     const loggedInUser = session?.user;
     if (!loggedInUser)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const ip = (req.headers.get('x-forwarded-for') ?? '127.0.0.1').split(
+      ','
+    )[0];
+    const { remaining } = await likeratelimit.limit(ip);
+    if (remaining === 0) {
+      return NextResponse.json(
+        {
+          message:
+            'You are sending too many requests. Please try again after sometime',
+        },
+        { status: 429 }
+      );
+    }
 
     const post = await prisma.post.findUnique({
       where: { id: postId },
@@ -121,6 +151,20 @@ export async function DELETE(
     const loggedInUser = session?.user;
     if (!loggedInUser)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const ip = (req.headers.get('x-forwarded-for') ?? '127.0.0.1').split(
+      ','
+    )[0];
+    const { remaining } = await unlikeratelimit.limit(ip);
+    if (remaining === 0) {
+      return NextResponse.json(
+        {
+          message:
+            'You are sending too many requests. Please try again after sometime',
+        },
+        { status: 429 }
+      );
+    }
 
     const post = await prisma.post.findUnique({
       where: { id: postId },

@@ -1,6 +1,8 @@
 import getServerSession from '@/lib/get-server-session';
 import { prisma } from '@/lib/prisma';
 import { FollowingInfo } from '@/lib/types';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import { NextRequest, NextResponse } from 'next/server';
 interface IUserIdProps {
   params: {
@@ -8,6 +10,20 @@ interface IUserIdProps {
   };
 }
 
+const followingratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(40, '60s'),
+  ephemeralCache: new Map(),
+  prefix: '@upstash/ratelimit/following',
+  analytics: true,
+});
+const unfollowingratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(40, '60s'),
+  ephemeralCache: new Map(),
+  prefix: '@upstash/ratelimit/un-following',
+  analytics: true,
+});
 export async function GET(
   req: NextRequest,
   { params: { userId } }: IUserIdProps
@@ -55,6 +71,20 @@ export async function POST(
     if (!loggedInUser)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const ip = (req.headers.get('x-forwarded-for') ?? '127.0.0.1').split(
+      ','
+    )[0];
+    const { remaining } = await followingratelimit.limit(ip);
+    if (remaining === 0) {
+      return NextResponse.json(
+        {
+          message:
+            'You are sending too many requests. Please try again after sometime',
+        },
+        { status: 429 }
+      );
+    }
+
     await prisma.$transaction([
       prisma.follow.upsert({
         where: {
@@ -97,6 +127,20 @@ export async function DELETE(
     const loggedInUser = session?.user;
     if (!loggedInUser)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const ip = (req.headers.get('x-forwarded-for') ?? '127.0.0.1').split(
+      ','
+    )[0];
+    const { remaining } = await unfollowingratelimit.limit(ip);
+    if (remaining === 0) {
+      return NextResponse.json(
+        {
+          message:
+            'You are sending too many requests. Please try again after sometime',
+        },
+        { status: 429 }
+      );
+    }
 
     await prisma.$transaction([
       prisma.follow.deleteMany({

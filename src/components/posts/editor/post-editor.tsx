@@ -4,6 +4,7 @@ import UserAvatar from "@/components/layout/user-avatar";
 import { Button } from "@/components/ui/button";
 import useMediaUpload, { Attachment } from "@/hooks/use-media-upload";
 import { useSubmitPost } from "@/hooks/use-submit-post";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -15,6 +16,7 @@ import Image from "next/image";
 import { ClipboardEvent, memo, useRef } from "react";
 import "./styles.css";
 function PostEditor() {
+    const { toast } = useToast()
     const session = useSession()
     const user = session.data?.user
     const mutation = useSubmitPost()
@@ -31,17 +33,34 @@ function PostEditor() {
         ]
     })
     const input = editor?.getText({ blockSeparator: "\n" }) || ""
+
     function onSubmit() {
         mutation.mutate({
             content: input,
             mediaIds: attachments.map(a => a.mediaId).filter(Boolean) as string[]
-        }, {
-            onSuccess: () => {
-                editor?.commands.clearContent();
-                resetMediaUploads();
-            }
-        })
+        },
+            {
+                onSuccess: () => {
+                    editor?.commands.clearContent();
+                    resetMediaUploads();
+
+                },
+                onError(error, variables, context) {
+                    if (error.name === "Request failed with status code 429") {
+                        toast({
+                            variant: "destructive",
+                            description: "Too many attempts. Please wait for sometime."
+                        })
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            description: "Failed to create post. Please try again."
+                        })
+                    }
+                },
+            })
     }
+
 
     function onPaste(e: ClipboardEvent<HTMLInputElement>) {
         const files = Array.from(e.clipboardData.items).filter(item => item.kind === "file").map(item => item.getAsFile()) as File[];

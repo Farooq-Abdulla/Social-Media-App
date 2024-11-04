@@ -21,9 +21,9 @@ export default function ForYouFeed() {
 
     const posts = data?.pages.flatMap(page => page.posts) || []
     if (status === "pending") {
-        return <PostsLoadingSkeleton/>;
+        return <PostsLoadingSkeleton />;
     }
-    if(status==="success" && !posts.length && !hasNextPage){
+    if (status === "success" && !posts.length && !hasNextPage) {
         return <p className="text-center text-muted-foreground">No one has Posted anything yet</p>
     }
     if (status === "error") {

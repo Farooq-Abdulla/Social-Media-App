@@ -12,11 +12,23 @@ export function useDeletePost() {
 
     const mutation = useMutation({
         mutationFn: deletePost,
-        onSuccess: async (deletedPost) => {
+        onMutate: async () => {
             const queryFilter: QueryFilters = { queryKey: ["post-feed"] }
             await queryClient.cancelQueries(queryFilter)
+            return { queryFilter }
+        },
+        onSuccess: async (deletedPost, variables, context) => {
+            if (!deletedPost || !context.queryFilter) {
+                toast({
+                    variant: "destructive",
+                    description: "Too many attempts. Please wait before deleting again."
+                })
+                return;
+            }
+            // const queryFilter: QueryFilters = { queryKey: ["post-feed"] }
+            // await queryClient.cancelQueries(queryFilter)
             queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
-                queryFilter,
+                context.queryFilter,
                 (oldData) => {
                     if (!oldData) return;
                     return {
